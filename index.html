@@ -14,8 +14,24 @@
 	<script src="assets/js/app.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript" charset="utf-8">
 
+
+	function PG(_t) {
+	    this.window = _t;
+	    this.condSet = function(obj) {
+		return typeof(this.window[obj]) != 'undefined' ? this.window[obj] : 0 ;
+		}
+	    this.navigator = this.condSet('navigator');
+	    this.cordova = this.condSet('cordova');
+	    this.screen = this.condSet('screen');
+	    this.$ = function(name) { return this.window[""+name];}
+	}
+
+	var _pg = _pg || new PG(this);
+	var called;
+
 	function openExternal(url)
 	{
+		called = 0;
 		x$( "#frame0" ).attr('src', url);
 		x$('#frame0').css({ display : 'block' });
 		x$( "#main" ).before( "<a id='linkhandler'  target='frame0'>" );
@@ -30,10 +46,13 @@
 		setTimeout(function(){ x$('#title_bar').css({height: '0px', opacity : '0'}); },5000);
 		if (device.platform.match("Android")){
 			document.addEventListener("backbutton", function(){
-					return false;
+				if (confirm("Quit Application?")) {
+				    navigator.app.exitApp();
+				    return true;
+				}
+				return false;
 			}, false);
 		}
-
 	}
 	
 	function frame_busy() {
@@ -47,7 +66,10 @@
 	}
 	function ready() {
 		x$('#wait').css({ display : 'none' });
+		called++;
+		frame0.hello(_pg);
 	}
+
 
 	</script>
     </head>
